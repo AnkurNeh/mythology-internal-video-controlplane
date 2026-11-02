@@ -1,0 +1,40 @@
+{
+  "version": "internal_worker_launch_v1",
+  "provider": "huggingface_jobs",
+  "flavor": "a100-large",
+  "timeout": "20m",
+  "model_key": "wan22-ti2v-5b",
+  "model_id": "Wan-AI/Wan2.2-TI2V-5B-Diffusers",
+  "python": "3.11",
+  "with_deps": [
+    "requests==2.32.5",
+    "torch>=2.6",
+    "diffusers>=0.38.0",
+    "transformers>=4.57.0",
+    "accelerate>=1.11.0",
+    "imageio[ffmpeg]>=2.37.0",
+    "Pillow>=11.3.0",
+    "safetensors>=0.6.2",
+    "ftfy>=6.3.1"
+  ],
+  "env": {
+    "BASE44_APP_DOMAIN": "https://hindu-mythology-stories.base44.app",
+    "INTERNAL_VIDEO_WORKER_ID": "hf-wan22-a100-1",
+    "INTERNAL_VIDEO_MODEL_KEY": "wan22-ti2v-5b",
+    "INTERNAL_VIDEO_MODEL_ID": "Wan-AI/Wan2.2-TI2V-5B-Diffusers",
+    "INTERNAL_VIDEO_LEASE_SECONDS": "600",
+    "INTERNAL_VIDEO_POLL_SECONDS": "5",
+    "INTERNAL_VIDEO_MAX_ATTEMPTS": "3",
+    "INTERNAL_VIDEO_MAX_INLINE_BYTES": "8388608",
+    "INTERNAL_VIDEO_MAX_RUNTIME_SECONDS": "900",
+    "SCENECRAFT_GPU_PROFILE": "a100-large"
+  },
+  "secret_names": [
+    "INTERNAL_VIDEO_WORKER_API_KEY"
+  ],
+  "notes": [
+    "Validated real Wan2.2 I2V smoke on a100-large; A10G OOM-killed during denoising.",
+    "Observed peak CUDA allocation on the successful smoke was 41.706 GB.",
+    "Production promotion remains blocked until benchmark and human-panel gates pass."
+  ]
+}
