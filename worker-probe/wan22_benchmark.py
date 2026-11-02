@@ -40,7 +40,10 @@ negative_prompt = "text, watermark, scene cut, duplicate face, distorted geometr
 started = time.time()
 vae = AutoencoderKLWan.from_pretrained(MODEL_ID, subfolder="vae", torch_dtype=torch.float32)
 pipe = WanImageToVideoPipeline.from_pretrained(MODEL_ID, vae=vae, torch_dtype=torch.bfloat16)
-pipe.enable_model_cpu_offload()
+if os.environ.get("SCENECRAFT_GPU_PROFILE", "") == "a100-large":
+    pipe.to("cuda")
+else:
+    pipe.enable_model_cpu_offload()
 image = load_image(IMAGE_URL)
 
 torch.cuda.reset_peak_memory_stats()
