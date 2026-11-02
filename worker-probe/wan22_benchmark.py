@@ -21,7 +21,7 @@ from pathlib import Path
 
 import requests
 import torch
-from diffusers import AutoencoderKLWan, WanPipeline
+from diffusers import AutoencoderKLWan, WanImageToVideoPipeline
 from diffusers.utils import export_to_video, load_image
 
 MODEL_ID = "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
@@ -38,7 +38,7 @@ negative_prompt = "text, watermark, scene cut, duplicate face, distorted geometr
 
 started = time.time()
 vae = AutoencoderKLWan.from_pretrained(MODEL_ID, subfolder="vae", torch_dtype=torch.float32)
-pipe = WanPipeline.from_pretrained(MODEL_ID, vae=vae, torch_dtype=torch.bfloat16)
+pipe = WanImageToVideoPipeline.from_pretrained(MODEL_ID, vae=vae, torch_dtype=torch.bfloat16)
 pipe.enable_model_cpu_offload()
 image = load_image(IMAGE_URL)
 
