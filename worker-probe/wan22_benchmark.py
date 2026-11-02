@@ -26,16 +26,19 @@ from diffusers import AutoencoderKLWan, WanImageToVideoPipeline
 from diffusers.utils import export_to_video, load_image
 
 MODEL_ID = "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
-IMAGE_URL = "https://raw.githubusercontent.com/AnkurNeh/mythology-internal-video-controlplane/main/worker-probe/synthetic_presenter.png"
+IMAGE_URL = os.environ.get("SCENECRAFT_BENCHMARK_IMAGE_URL", "https://raw.githubusercontent.com/AnkurNeh/mythology-internal-video-controlplane/main/worker-probe/synthetic_presenter.png")
 CALLBACK = "https://hindu-mythology-stories.base44.app/api/apps/6ab229601c793396d654094a/functions/manageInternalBenchmarkArtifact"
 APP_ID = "6ab229601c793396d654094a"
 MODEL_KEY = "wan22-ti2v-5b"
-CASE_KEY = "wan22_synthetic_smoke_16x9"
+CASE_KEY = os.environ.get("SCENECRAFT_BENCHMARK_CASE_KEY", "wan22_synthetic_smoke_16x9")
 LAUNCH_ID = os.environ["SCENECRAFT_BENCHMARK_LAUNCH_ID"]
 NONCE = os.environ["SCENECRAFT_BENCHMARK_NONCE"]
 
-prompt = "A clean stylized synthetic presenter remains centered while making a subtle natural head movement. Stable framing, no cuts, no text, no background changes."
+prompt = os.environ.get("SCENECRAFT_BENCHMARK_PROMPT", "A clean stylized synthetic presenter remains centered while making a subtle natural head movement. Stable framing, no cuts, no text, no background changes.")
 negative_prompt = "text, watermark, scene cut, duplicate face, distorted geometry, flashing, flicker"
+WIDTH = int(os.environ.get("SCENECRAFT_BENCHMARK_WIDTH", "1280"))
+HEIGHT = int(os.environ.get("SCENECRAFT_BENCHMARK_HEIGHT", "704"))
+NUM_FRAMES = int(os.environ.get("SCENECRAFT_BENCHMARK_FRAMES", "17"))
 
 started = time.time()
 vae = AutoencoderKLWan.from_pretrained(MODEL_ID, subfolder="vae", torch_dtype=torch.float32)
@@ -52,9 +55,9 @@ frames = pipe(
     image=image,
     prompt=prompt,
     negative_prompt=negative_prompt,
-    height=704,
-    width=1280,
-    num_frames=17,
+    height=HEIGHT,
+    width=WIDTH,
+    num_frames=NUM_FRAMES,
     num_inference_steps=8,
     guidance_scale=3.0,
 ).frames[0]
@@ -97,8 +100,8 @@ print(json.dumps({
     "passed": True,
     "model": MODEL_KEY,
     "frames": len(frames),
-    "width": 1280,
-    "height": 704,
+    "width": WIDTH,
+    "height": HEIGHT,
     "fps": 24,
     "gpu_seconds": round(gpu_seconds, 3),
     "peak_cuda_gb": round(peak_gb, 3),
