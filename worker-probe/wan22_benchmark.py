@@ -9,6 +9,7 @@
 #   "Pillow>=11.3.0",
 #   "requests>=2.32.5",
 #   "safetensors>=0.6.2",
+#   "ftfy>=6.3.1",
 # ]
 # ///
 import base64
