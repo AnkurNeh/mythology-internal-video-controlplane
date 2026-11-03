@@ -39,6 +39,7 @@ REGISTER_ONLY = os.environ.get("INTERNAL_VIDEO_REGISTER_ONLY", "0").strip() == "
 LEASE_SECONDS = int(os.environ.get("INTERNAL_VIDEO_LEASE_SECONDS", "300"))
 POLL_SECONDS = float(os.environ.get("INTERNAL_VIDEO_POLL_SECONDS", "5"))
 MAX_ATTEMPTS = int(os.environ.get("INTERNAL_VIDEO_MAX_ATTEMPTS", "3"))
+ONE_SHOT = os.environ.get("INTERNAL_VIDEO_ONE_SHOT", "0").strip() == "1"
 OUTPUT_PUT_URL = os.environ.get("INTERNAL_VIDEO_OUTPUT_PUT_URL", "").strip()
 OUTPUT_PUBLIC_URL = os.environ.get("INTERNAL_VIDEO_OUTPUT_PUBLIC_URL", "").strip()
 MAX_INLINE_BYTES = int(os.environ.get("INTERNAL_VIDEO_MAX_INLINE_BYTES", str(8 * 1024 * 1024)))
@@ -306,6 +307,8 @@ def main():
                 complete["video_bytes_base64"] = result["video_bytes_base64"]
                 complete["mime_type"] = result.get("mime_type", "video/mp4")
             client.call("worker_complete", **complete)
+            if ONE_SHOT:
+                break
         except Exception as exc:
             client.call(
                 "worker_fail",
@@ -315,6 +318,8 @@ def main():
                 error_class=exc.__class__.__name__,
                 error=str(exc)[:1800],
             )
+            if ONE_SHOT:
+                break
 
 if __name__ == "__main__":
     main()
