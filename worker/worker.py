@@ -1,3 +1,17 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "requests==2.32.5",
+#   "torch>=2.6",
+#   "diffusers>=0.38.0",
+#   "transformers>=4.57.0",
+#   "accelerate>=1.11.0",
+#   "imageio[ffmpeg]>=2.37.0",
+#   "Pillow>=11.3.0",
+#   "safetensors>=0.6.2",
+#   "ftfy>=6.3.1",
+# ]
+# ///
 import hashlib
 import json
 import os
@@ -21,6 +35,7 @@ WORKER_ID = os.environ.get("INTERNAL_VIDEO_WORKER_ID", "wan22-worker-1").strip()
 MODEL_KEY = os.environ.get("INTERNAL_VIDEO_MODEL_KEY", "wan22-ti2v-5b").strip()
 MODEL_ID = os.environ.get("INTERNAL_VIDEO_MODEL_ID", "Wan-AI/Wan2.2-TI2V-5B-Diffusers").strip()
 DRY_RUN = os.environ.get("INTERNAL_VIDEO_DRY_RUN", "0").strip() == "1"
+REGISTER_ONLY = os.environ.get("INTERNAL_VIDEO_REGISTER_ONLY", "0").strip() == "1"
 LEASE_SECONDS = int(os.environ.get("INTERNAL_VIDEO_LEASE_SECONDS", "300"))
 POLL_SECONDS = float(os.environ.get("INTERNAL_VIDEO_POLL_SECONDS", "5"))
 MAX_ATTEMPTS = int(os.environ.get("INTERNAL_VIDEO_MAX_ATTEMPTS", "3"))
@@ -250,6 +265,9 @@ def main():
         model_keys=[MODEL_KEY],
         capabilities=["image_to_video", "character_reference", "camera_control"],
     )
+    if REGISTER_ONLY:
+        print(json.dumps({"event":"scenecraft_worker_register","passed":True,"register_only":True,"model_loaded":False,"customer_jobs_claimed":False}))
+        return
     # A bounded one-shot mode is suitable for managed GPU Jobs. It registers,
     # polls for a limited period and exits rather than consuming unlimited GPU time.
     deadline = time.monotonic() + max(30, int(os.environ.get("INTERNAL_VIDEO_MAX_RUNTIME_SECONDS", "900")))
