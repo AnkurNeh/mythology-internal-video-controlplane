@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.mp4
+*.wav
+*.mp3
+*.json
+*.log
+.env*
+.git/
+tests/
